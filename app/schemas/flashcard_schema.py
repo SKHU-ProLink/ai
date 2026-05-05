@@ -15,3 +15,9 @@ class WordItem(BaseModel):
 
 class FlashcardResponse(BaseModel):
     words: list[WordItem]
+
+
+class PronunciationResponse(BaseModel):
+    is_correct: bool
+    recognized_text: str
+    feedback: str
