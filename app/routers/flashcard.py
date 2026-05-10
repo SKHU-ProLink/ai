@@ -5,7 +5,7 @@ from app.services.flashcard_service import generate_flashcards, pronunciation_fe
 router = APIRouter()
 
 
-@router.post("/generate", response_model=FlashcardResponse)
+@router.post("", response_model=FlashcardResponse)
 def generate(request: FlashcardRequest):
     try:
         return generate_flashcards(request.level)

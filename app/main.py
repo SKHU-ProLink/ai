@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from app.routers import flashcard
+from app.routers import flashcard, tts
 
 load_dotenv()
 
@@ -13,3 +13,4 @@ def health_check():
 
 
 app.include_router(flashcard.router, prefix="/flashcard")
+app.include_router(tts.router, prefix="/flashcard/tts")
