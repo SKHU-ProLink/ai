@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.post("", response_model=FlashcardResponse)
-def generate_flashcards(request: FlashcardRequest):
+def generate(request: FlashcardRequest):
     try:
         return generate_flashcards(request.level)
     except Exception as e:
