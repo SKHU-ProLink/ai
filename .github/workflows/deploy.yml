@@ -20,8 +20,15 @@ jobs:
       contents: read
       packages: write
 
+    outputs:
+      image: ${{ steps.lower.outputs.image }}
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Convert image name to lowercase
+        id: lower
+        run: echo "image=$(echo ghcr.io/${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -39,7 +46,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ steps.lower.outputs.image }}
           tags: |
             type=sha,prefix=sha-
             type=raw,value=latest
@@ -69,7 +76,7 @@ jobs:
             set -euo pipefail
             echo ${{ secrets.GITHUB_TOKEN }} | \
               docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker pull ghcr.io/${{ github.repository }}:latest
+            docker pull ${{ needs.build-and-push.outputs.image }}:latest
             docker stop swcap-ai || true
             docker rm   swcap-ai || true
             docker run -d \
@@ -77,6 +84,6 @@ jobs:
               --restart always \
               -p 8000:8000 \
               --env-file ${{ secrets.SERVER_WORKDIR }}/.env \
-              ghcr.io/${{ github.repository }}:latest
+              ${{ needs.build-and-push.outputs.image }}:latest
             docker image prune -f
             echo "Deploy Complete"
